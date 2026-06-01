@@ -6,6 +6,7 @@
     "author_name": "Your Name",
     "license": ["MIT", "Apache-2.0", "Proprietary"],
     "python_version": "3.13",
+    "aws_region": "eu-west-1",
     "_copyright_year": "2026",
     "_copy_without_render": [".github/workflows/*"]
 }

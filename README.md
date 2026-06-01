@@ -13,6 +13,8 @@ placeholder Terraform for `prod` / `preprod`.
 - GitHub Actions: PR checks, main pipeline (lint/test/check → version bump + tag → deploy
   to prod), and a manual "deploy to preprod" button
 - Placeholder Terraform stacks for `prod` and `preprod`
+- `scripts/bootstrap-tfstate.sh` — provisions the S3 backend bucket (S3-native locking) for
+  Terraform remote state
 - `Makefile` task runner, `LICENSE`, `.gitignore`, `CLAUDE.md`
 
 ## Prerequisites
