@@ -11,6 +11,7 @@ on:
 
 permissions:
   contents: read
+  id-token: write  # for AWS OIDC (configure-aws-credentials)
 
 jobs:
   deploy-preprod:
@@ -20,8 +21,16 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.event.inputs.ref || github.ref }}
+      # Set the `preprod` environment variables AWS_ROLE_ARN, AWS_REGION and
+      # TF_STATE_BUCKET (the bucket printed by scripts/bootstrap-tfstate.sh).
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
       - uses: hashicorp/setup-terraform@v3
       - name: Terraform apply (preprod)
         run: |
-          terraform -chdir=terraform/preprod init -input=false
+          terraform -chdir=terraform/preprod init -input=false \
+            -backend-config="bucket=${{ vars.TF_STATE_BUCKET }}"
           terraform -chdir=terraform/preprod apply -auto-approve -input=false

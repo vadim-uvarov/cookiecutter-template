@@ -4,6 +4,18 @@
 terraform {
   required_version = ">= 1.5"
 
+  # Remote state in S3 with S3-native locking. The bucket name embeds the AWS
+  # account ID, so it is supplied at init time rather than hardcoded here:
+  #   terraform -chdir=terraform/prod init \
+  #     -backend-config="bucket=<project>-tfstate-<account_id>"
+  # Run scripts/bootstrap-tfstate.sh once per account to create the bucket.
+  backend "s3" {
+    key          = "prod/terraform.tfstate"
+    region       = "{{ cookiecutter.aws_region }}"
+    encrypt      = true
+    use_lockfile = true
+  }
+
   required_providers {
     null = {
       source  = "hashicorp/null"

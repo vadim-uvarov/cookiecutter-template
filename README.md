@@ -51,3 +51,17 @@ make install   # uv sync
 make hooks     # install git hooks
 make lint test
 ```
+
+## Deploy setup (Terraform remote state)
+
+The `prod` / `preprod` stacks use an S3 backend with S3-native locking. The bucket name
+embeds the AWS account ID, so it is passed at `terraform init` time rather than hardcoded.
+
+1. Create the state bucket once per AWS account: `./scripts/bootstrap-tfstate.sh`
+   (it prints the bucket name).
+2. In each GitHub Environment (`prod`, `preprod`), set these **variables**:
+   - `AWS_ROLE_ARN` — IAM role assumed via GitHub OIDC by `aws-actions/configure-aws-credentials`
+   - `AWS_REGION` — same region as `aws_region`
+   - `TF_STATE_BUCKET` — the bucket printed by the bootstrap script
+
+The deploy jobs request `id-token: write` for OIDC; no long-lived AWS keys are needed.
