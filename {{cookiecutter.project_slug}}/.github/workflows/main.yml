@@ -1,14 +1,14 @@
-name: Master pipeline
+name: Main pipeline
 
 on:
   push:
-    branches: [master]
+    branches: [main]
 
 permissions:
   contents: write  # needed to push the version-bump commit and tag
 
 concurrency:
-  group: master-pipeline
+  group: main-pipeline
   cancel-in-progress: false
 
 jobs:
@@ -80,7 +80,7 @@ jobs:
           uv run cz bump --yes --changelog
           echo "version=$(uv run cz version --project)" >> "$GITHUB_OUTPUT"
       - name: Push commit and tag
-        run: git push --follow-tags origin HEAD:master
+        run: git push --follow-tags origin HEAD:main
 
   deploy-prod:
     needs: bump
@@ -89,7 +89,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: master
+          ref: main
       - uses: hashicorp/setup-terraform@v3
       - name: Terraform apply (prod)
         run: |

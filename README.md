@@ -10,7 +10,7 @@ placeholder Terraform for `prod` / `preprod`.
 - Dev tooling configured in `pyproject.toml`: **ruff**, **mypy**, **pytest**, **commitizen**
 - Git hooks (`.pre-commit-config.yaml`): lint + type-check on commit, commit-message check,
   tests on push
-- GitHub Actions: PR checks, master pipeline (lint/test/check → version bump + tag → deploy
+- GitHub Actions: PR checks, main pipeline (lint/test/check → version bump + tag → deploy
   to prod), and a manual "deploy to preprod" button
 - Placeholder Terraform stacks for `prod` and `preprod`
 - `Makefile` task runner, `LICENSE`, `.gitignore`, `CLAUDE.md`

@@ -34,7 +34,7 @@ TODO
 - Mention yourself as a co-author
 - Commit along the way after completing each logical unit of work
 - Combine related code changes into a single commit
-- Avoid commiting to master, instead create a new branch and then open a PR
+- Avoid commiting to main, instead create a new branch and then open a PR
 
 ## Function Naming
 - Start all function and method names with action verbs.
@@ -86,4 +86,4 @@ TODO
 ## Opening a pull request
 - Open a new pull request after a big change to the code
 - Avoid mixing several unrelated tasks inside one pull request
-- If a previous pull request is not yet merged into master, and you need to build a new task on top of these changes, then create a new branch from the previous branch, make changes and open a new pull request which targets the previous pull request
+- If a previous pull request is not yet merged into main, and you need to build a new task on top of these changes, then create a new branch from the previous branch, make changes and open a new pull request which targets the previous pull request
