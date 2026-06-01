@@ -1,0 +1,11 @@
+{
+    "project_name": "My Web App",
+    "project_description": "A web app with a Python backend.",
+    "project_slug": "{{ cookiecutter.project_name|lower|replace(' ', '-')|replace('_', '-') }}",
+    "package_name": "{{ cookiecutter.project_slug|replace('-', '_') }}",
+    "author_name": "Your Name",
+    "license": ["MIT", "Apache-2.0", "Proprietary"],
+    "python_version": "3.13",
+    "_copyright_year": "2026",
+    "_copy_without_render": [".github/workflows/*"]
+}

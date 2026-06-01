@@ -1,0 +1,97 @@
+name: Master pipeline
+
+on:
+  push:
+    branches: [master]
+
+permissions:
+  contents: write  # needed to push the version-bump commit and tag
+
+concurrency:
+  group: master-pipeline
+  cancel-in-progress: false
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+      - run: uv sync
+      - run: uv run ruff check .
+      - run: uv run ruff format --check .
+      - run: uv run mypy
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+      - run: uv sync
+      - run: uv run pytest
+
+  commitizen-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+      - run: uv sync
+      # Validate every commit message since the previous version tag.
+      - name: Check commit messages
+        run: |
+          PREV_TAG="$(git describe --tags --abbrev=0 2>/dev/null || true)"
+          if [ -n "$PREV_TAG" ]; then
+            uv run cz check --rev-range "${PREV_TAG}..HEAD"
+          else
+            echo "No previous tag found; skipping range check."
+          fi
+
+  bump:
+    needs: [lint, test, commitizen-check]
+    runs-on: ubuntu-latest
+    # Skip on the bump commit itself to avoid an infinite loop.
+    if: ${{ !startsWith(github.event.head_commit.message, 'bump:') }}
+    outputs:
+      version: ${{ steps.cz.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+      - run: uv sync
+      - name: Configure git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+      - name: Bump version and create tag
+        id: cz
+        run: |
+          uv run cz bump --yes --changelog
+          echo "version=$(uv run cz version --project)" >> "$GITHUB_OUTPUT"
+      - name: Push commit and tag
+        run: git push --follow-tags origin HEAD:master
+
+  deploy-prod:
+    needs: bump
+    runs-on: ubuntu-latest
+    environment: prod
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: master
+      - uses: hashicorp/setup-terraform@v3
+      - name: Terraform apply (prod)
+        run: |
+          terraform -chdir=terraform/prod init -input=false
+          terraform -chdir=terraform/prod apply -auto-approve -input=false

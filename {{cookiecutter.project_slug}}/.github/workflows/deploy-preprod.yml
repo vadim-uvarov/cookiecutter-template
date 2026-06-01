@@ -1,0 +1,27 @@
+name: Deploy to preprod
+
+# Manual "button": appears under the Actions tab as "Run workflow".
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: "Git ref (branch / tag / SHA) to deploy"
+        required: false
+        default: ""
+
+permissions:
+  contents: read
+
+jobs:
+  deploy-preprod:
+    runs-on: ubuntu-latest
+    environment: preprod
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.ref || github.ref }}
+      - uses: hashicorp/setup-terraform@v3
+      - name: Terraform apply (preprod)
+        run: |
+          terraform -chdir=terraform/preprod init -input=false
+          terraform -chdir=terraform/preprod apply -auto-approve -input=false
