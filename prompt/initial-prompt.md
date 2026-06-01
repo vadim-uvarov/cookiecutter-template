@@ -12,7 +12,7 @@ Project structure:
         - Project layout
         - Project architecture
         - Local dev and deploy instructions
-1. CLAUDE.md - use @./CLAUDE.md
+1. CLAUDE.md - use prompt/@template_CLAUDE.md
 2. Pyproject.toml
 	1. Python version
 	2. Dev Dependencies: Ruff, mypy, pytest, commitizen
