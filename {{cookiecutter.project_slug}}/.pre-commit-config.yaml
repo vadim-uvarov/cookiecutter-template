@@ -17,6 +17,16 @@ repos:
       - id: mypy
         additional_dependencies: []
 
+  # Check Terraform formatting on commit (run `terraform fmt -recursive terraform` to fix).
+  - repo: local
+    hooks:
+      - id: terraform-fmt
+        name: terraform fmt
+        entry: terraform fmt -check -recursive terraform
+        language: system
+        files: \.tf$
+        pass_filenames: false
+
   # Enforce the commitizen commit-message standard.
   - repo: https://github.com/commitizen-tools/commitizen
     rev: v4.1.0
