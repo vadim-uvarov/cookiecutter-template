@@ -2,7 +2,7 @@
 
 A [cookiecutter](https://cookiecutter.readthedocs.io/) template that scaffolds a web app
 with a Python backend, pre-wired with tooling, git hooks, GitHub Actions CI/CD, and
-placeholder Terraform for `prod` / `preprod`.
+placeholder Terraform for `prod`.
 
 ## What you get
 
@@ -11,8 +11,8 @@ placeholder Terraform for `prod` / `preprod`.
 - Git hooks (`.pre-commit-config.yaml`): lint + type-check on commit, commit-message check,
   tests on push
 - GitHub Actions: PR checks, main pipeline (lint/test/check → version bump + tag → deploy
-  to prod), and a manual "deploy to preprod" button
-- Placeholder Terraform stacks for `prod` and `preprod`
+  to prod), and a manual "deploy to prod" button that runs from any branch
+- Placeholder Terraform stack for `prod`
 - `scripts/bootstrap-tfstate.sh` — provisions the S3 backend bucket (S3-native locking) for
   Terraform remote state
 - `Makefile` task runner, `LICENSE`, `.gitignore`, `CLAUDE.md`
@@ -42,6 +42,7 @@ You will be prompted for:
 | `author_name`         | Used in `LICENSE` and `pyproject.toml`                   |
 | `license`             | `MIT`, `Apache-2.0`, or `Proprietary`                    |
 | `python_version`      | Pinned Python version                                    |
+| `aws_region`          | AWS region for the Terraform backend and bootstrap script |
 
 ## After generating
 
@@ -54,12 +55,12 @@ make lint test
 
 ## Deploy setup (Terraform remote state)
 
-The `prod` / `preprod` stacks use an S3 backend with S3-native locking. The bucket name
-embeds the AWS account ID, so it is passed at `terraform init` time rather than hardcoded.
+The `prod` stack uses an S3 backend with S3-native locking. The bucket name embeds the AWS
+account ID, so it is passed at `terraform init` time rather than hardcoded.
 
 1. Create the state bucket once per AWS account: `./scripts/bootstrap-tfstate.sh`
    (it prints the bucket name).
-2. In each GitHub Environment (`prod`, `preprod`), set these **variables**:
+2. In the `prod` GitHub Environment, set these **variables**:
    - `AWS_ROLE_ARN` — IAM role assumed via GitHub OIDC by `aws-actions/configure-aws-credentials`
    - `AWS_REGION` — same region as `aws_region`
    - `TF_STATE_BUCKET` — the bucket printed by the bootstrap script
