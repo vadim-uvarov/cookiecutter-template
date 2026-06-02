@@ -13,8 +13,8 @@ placeholder Terraform for `prod`.
 - GitHub Actions: PR checks, main pipeline (lint/test/check → version bump + tag → deploy
   to prod), and a manual "deploy to prod" button that runs from any branch
 - Placeholder Terraform stack for `prod`
-- `scripts/bootstrap-tfstate.sh` — provisions the S3 backend bucket (S3-native locking) for
-  Terraform remote state
+- `scripts/` deploy helpers: create the S3 state bucket, the GitHub OIDC provider + IAM
+  role, and the prod GitHub Environment variables (see "Deploy setup" below)
 - `Makefile` task runner, `LICENSE`, `.gitignore`, `CLAUDE.md`
 
 ## Prerequisites
@@ -58,13 +58,15 @@ make lint test
 The `prod` stack uses an S3 backend with S3-native locking. The bucket name embeds the AWS
 account ID, so it is passed at `terraform init` time rather than hardcoded.
 
-1. Create the state bucket once per AWS account: `./scripts/bootstrap-tfstate.sh`
+1. Create the state bucket once per AWS account: `./scripts/create-bucket-for-tfstate-in-aws.sh`
    (it prints the bucket name).
-2. Set the deploy variables on the `prod` GitHub Environment — run
-   `./scripts/setup-deploy-vars.sh` (uses the `gh` CLI and prompts for each value), or set
+2. Create the GitHub OIDC provider and the deploy IAM role:
+   `./scripts/setup-aws-oidc-role.sh` (it prints the role ARN).
+3. Set the deploy variables on the `prod` GitHub Environment — run
+   `./scripts/setup-deploy-vars-in-github.sh` (uses the `gh` CLI and prompts for each value), or set
    them manually:
-   - `AWS_ROLE_ARN` — IAM role assumed via GitHub OIDC by `aws-actions/configure-aws-credentials`
+   - `AWS_ROLE_ARN` — the role ARN from step 2 (assumed via GitHub OIDC by `aws-actions/configure-aws-credentials`)
    - `AWS_REGION` — same region as `aws_region`
-   - `TF_STATE_BUCKET` — the bucket printed by the bootstrap script
+   - `TF_STATE_BUCKET` — the bucket name from step 1
 
 The deploy jobs request `id-token: write` for OIDC; no long-lived AWS keys are needed.
