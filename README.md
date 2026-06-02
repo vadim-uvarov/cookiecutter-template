@@ -60,7 +60,9 @@ account ID, so it is passed at `terraform init` time rather than hardcoded.
 
 1. Create the state bucket once per AWS account: `./scripts/bootstrap-tfstate.sh`
    (it prints the bucket name).
-2. In the `prod` GitHub Environment, set these **variables**:
+2. Set the deploy variables on the `prod` GitHub Environment — run
+   `./scripts/setup-deploy-vars.sh` (uses the `gh` CLI and prompts for each value), or set
+   them manually:
    - `AWS_ROLE_ARN` — IAM role assumed via GitHub OIDC by `aws-actions/configure-aws-credentials`
    - `AWS_REGION` — same region as `aws_region`
    - `TF_STATE_BUCKET` — the bucket printed by the bootstrap script
