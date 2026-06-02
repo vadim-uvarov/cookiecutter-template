@@ -6,7 +6,7 @@ placeholder Terraform for `prod`.
 
 ## What you get
 
-- `uv`-managed Python 3.13 project with a `src/` layout
+- `uv`-managed Python 3.13 project with separate `backend/` (Python package) and `frontend/` folders
 - Dev tooling configured in `pyproject.toml`: **ruff**, **mypy**, **pytest**, **commitizen**
 - Git hooks (`.pre-commit-config.yaml`): lint + type-check on commit, commit-message check,
   tests on push
