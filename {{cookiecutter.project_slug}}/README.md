@@ -2,31 +2,40 @@
 
 {{ cookiecutter.project_description }}
 
+
 ## Project layout
 
 TODO
+
 
 ## Project architecture
 
 TODO
 
+
 ## Local dev and deploy instructions
 
+### Local dev
 ```sh
 make install   # uv sync
 make hooks     # install git hooks
 make lint test
 ```
 
-## Setting up the repo and CI/CD
+### Local deploy
 
-### Repository setup (branch protection)
+TODO
+
+
+## Setting up the github repo and CI/CD
+
+### Github repo setup (branch protection and PR rules)
 
 Once the repo is on GitHub with a `main` branch, run `./scripts/setup-github-repo.sh` (needs
 the `gh` CLI with admin rights). It protects `main` so it can only be updated via a pull
 request whose pipeline passes and whose conversations are all resolved.
 
-### Deploy setup (Terraform remote state)
+### Deploy setup (AWS and Github Actions)
 
 The `prod` stack uses an S3 backend with S3-native locking. The bucket name embeds the AWS
 account ID, so it is passed at `terraform init` time rather than hardcoded.
